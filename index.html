@@ -71,11 +71,14 @@
                     success : function(result,status,xhr){
                         // console.log(result);
                         resolve(result);
-                        loader.classList.add('invisible');
+                        
                     },
                     error : function(xhr,status,error){
                         // console.log(error);
                         reject(error);
+                    },
+                    complete : function(){
+                        loader.classList.add('invisible');
                     }
                 });
             });
@@ -93,7 +96,7 @@
                                 <td>
                                     <button class="btn btn-sm btn-primary myView" data-bs-toggle="modal" data-bs-target="#exampleModal">View</button>
                                     <button class="btn btn-sm btn-success">Edit</button>
-                                    <button class="btn btn-sm btn-danger">Delete</button>
+                                    <button class="btn btn-sm btn-danger myDel">Delete</button>
                                 </td>
                             </tr>`;
                 });
@@ -105,7 +108,7 @@
             });
         });
         document.addEventListener('click',function(e){
-            if(e.target && e.target.classList[3] == 'myView'){
+            if(e.target && e.target.classList.contains('myView')){
                 var v1 = e.target.closest('tr').querySelector("td:first-child").innerHTML;
                 var v2 = e.target.closest('tr').querySelector("td:nth-child(2)").innerHTML;
                 var v3 = e.target.closest('tr').querySelector('td:nth-child(3)').innerHTML;
@@ -118,11 +121,25 @@
                 document.querySelector('div .myView .list-group li:nth-child(2)').innerHTML = v2;
                 document.querySelector('div .myView .list-group li:nth-child(3)').innerHTML = v3;
                 document.querySelector('div .myView .list-group li:nth-child(4)').innerHTML = v4;
-
-            }   else {
-
             }
-        })
+            if(e.target && e.target.classList.contains('myDel')){
+                var tr = e.target.closest('tr');
+                var delId = tr.querySelector('td:first-child').innerHTML;
+                // console.log(delId);
+                $.ajax({
+                    url : "https://fakerestapi.azurewebsites.net/api/v1/Authors/"+delId,
+                    type : 'DELETE',
+                    beforeSend : function(){
+                        loader.classList.add('invisible');
+                    },success : function(result,status,xhr){
+                        console.log(status);
+                        tr.remove();
+                    },error : function(xhr,status,error){
+
+                    }
+                })
+            }
+        });
 
        
 
